@@ -37,6 +37,8 @@ namespace MonopolyTestTask
 
 
             string str = "", menu = menuSb.ToString();
+
+            menuSb.Clear();
             while (isContinue)
             {
                 Console.WriteLine(menu);
@@ -74,19 +76,19 @@ namespace MonopolyTestTask
 
         }
 
-        static Box GetRandomBox()
+        private static Box GetRandomBox()
             => rnd.Next(0, 1) == 1
             ? new Box(rnd.Next(10, 800), rnd.Next(10, 10000), rnd.Next(10, 1200), rnd.Next(10, 10000), new DateOnly(2024, 11, 4).AddDays(rnd.Next(10, 100))) { Id = GlobalId++ }
             : new Box(rnd.Next(10, 800), rnd.Next(10, 10000), rnd.Next(10, 1200), rnd.Next(10, 10000), null, new DateOnly(2024, 7, 4).AddDays(rnd.Next(0, 90))) { Id = GlobalId++ };
 
-        static void DisplayHeader()
+        private static void DisplayHeader()
         {
             Console.WriteLine("{0,-6} | {1,-7} | {2,-6} | {3,-6} | {4,-6} | {5,-8} | {6,-10} | {7}",
                 "Тип", "Id", "Ширина", "Высота", "Глубина", "Вес (г)", "Срок годн.", "Объём");
         }
 
 
-        static void DisplayPallets(IEnumerable<Pallet> pallets)
+        private static void DisplayPallets(IEnumerable<Pallet> pallets)
         {
             DisplayHeader();
             foreach (var pallet in pallets)
@@ -96,7 +98,7 @@ namespace MonopolyTestTask
 
         }
 
-        static void DisplayPalletsWithBoxes(IEnumerable<Pallet> pallets)
+        private static void DisplayPalletsWithBoxes(IEnumerable<Pallet> pallets)
         {
             DisplayHeader();
             foreach (var pallet in pallets)
@@ -106,7 +108,7 @@ namespace MonopolyTestTask
 
         }
 
-        static void DisplayBoxes(IEnumerable<Pallet> pallets)
+        private static void DisplayBoxes(IEnumerable<Pallet> pallets)
         {
             DisplayHeader();
             foreach (var pallet in pallets)
@@ -120,13 +122,13 @@ namespace MonopolyTestTask
 
         }
 
-        static void DisplayPallet(Pallet pallet)
+        private static void DisplayPallet(Pallet pallet)
         {
             Console.WriteLine("{0,6} | {1,7} | {2,6} | {3,6} | {4,7} | {5,8} | {6,10} | {7}",
                 pallet.TypeName, pallet.Id, pallet.Width, pallet.Height, pallet.Depth, pallet.Weigh, pallet.ExpirationDate, pallet.Volume);
         }
 
-        static void DisplayPalletWithBoxes(Pallet pallet)
+        private static void DisplayPalletWithBoxes(Pallet pallet)
         {
             DisplayPallet(pallet);
             foreach (var box in pallet.GetBoxes())
@@ -135,20 +137,13 @@ namespace MonopolyTestTask
             }
         }
 
-        static void DisplayBox(Box box)
+        private static void DisplayBox(Box box)
         {
             Console.WriteLine("{0,6} | {1,7} | {2,6} | {3,6} | {4,7} | {5,8} | {6,10} | {7}",
                 box.TypeName, box.Id, box.Width, box.Height, box.Depth, box.Weigh, box.ExpirationDate, box.Volume);
         }
 
-
-
-        static void PalletsSortGroupByExpirationDateASCInGroupSortByWeigh(List<Pallet> pallets)
-        {
-
-        }
-
-        static List<Pallet> Top3PalletsBiggestExpirationDateSortByVolumeASC(List<Pallet> pallets)
+        private static List<Pallet> Top3PalletsBiggestExpirationDateSortByVolumeASC(List<Pallet> pallets)
         {
             Dictionary<Box, Pallet> newerBoxes = [];
 
@@ -313,6 +308,12 @@ namespace MonopolyTestTask
                     return x.Volume.CompareTo(y.Volume);
                 }
             }
+        }
+
+
+        private static void PalletsSortGroupByExpirationDateASCInGroupSortByWeigh(List<Pallet> pallets)
+        {
+
         }
     }
 }
