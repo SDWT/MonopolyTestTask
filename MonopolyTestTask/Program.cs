@@ -26,14 +26,13 @@ namespace MonopolyTestTask
             StringBuilder menuSb = new StringBuilder();
             menuSb.AppendLine("Выберите команду:");
             menuSb.AppendLine("0 - выход;");
-            //menuSb.AppendLine("1 - пользовательский ввод;");
-            menuSb.AppendLine("2 - сгруппировать все паллеты по сроку годности, отсортировать по возрастанию "
+            menuSb.AppendLine("1 - сгруппировать все паллеты по сроку годности, отсортировать по возрастанию "
                 + "срока годности, в каждой группе отсортировать паллеты по весу;");
             menuSb.AppendLine("срока годности, в каждой группе отсортировать паллеты по весу;");
-            menuSb.AppendLine("3 - 3 паллеты, которые содержат коробки с наибольшим сроком годности, отсортированные по возрастанию объема;");
-            menuSb.AppendLine("7 - Вывести все паллеты;");
-            menuSb.AppendLine("8 - Вывести все паллеты с коробками;");
-            menuSb.AppendLine("9 - Вывести все коробки.");
+            menuSb.AppendLine("2 - 3 паллеты, которые содержат коробки с наибольшим сроком годности, отсортированные по возрастанию объема;");
+            menuSb.AppendLine("7 - вывести все паллеты;");
+            menuSb.AppendLine("8 - вывести все паллеты с коробками;");
+            menuSb.AppendLine("9 - вывести все коробки.");
 
 
             string str = "", menu = menuSb.ToString();
@@ -50,12 +49,12 @@ namespace MonopolyTestTask
                     case "0":
                         isContinue = false;
                         break;
-                    case "2":
+                    case "1":
                         var t2Pallets = PalletsSortGroupByExpirationDateASCGroupSortByWeigh(pallets);
                         //DisplayPallets(t2Pallets);
                         DisplayPalletsGroupByExpirationDate(t2Pallets, MenuYesNo("Выводить в списке ли коробки?"));
                         break;
-                    case "3":
+                    case "2":
                         var t3Pallets = Top3PalletsBiggestExpirationDateSortByVolumeASC(pallets);
                         DisplayPallets(t3Pallets, true);
                         break;
@@ -93,10 +92,18 @@ namespace MonopolyTestTask
             }
         }
 
+        #region Generating
+
         private static Box GetRandomBox()
             => rnd.Next(0, 1) == 1
             ? new Box(rnd.Next(10, 800), rnd.Next(10, 10000), rnd.Next(10, 1200), rnd.Next(10, 10000), new DateOnly(2024, 11, 4).AddDays(rnd.Next(10, 100))) { Id = GlobalId++ }
             : new Box(rnd.Next(10, 800), rnd.Next(10, 10000), rnd.Next(10, 1200), rnd.Next(10, 10000), null, new DateOnly(2024, 7, 4).AddDays(rnd.Next(0, 90))) { Id = GlobalId++ };
+
+
+
+        #endregion
+
+        #region Console Display
 
         private static void DisplayHeader()
         {
@@ -104,15 +111,18 @@ namespace MonopolyTestTask
                 "Тип", "Id", "Ширина", "Высота", "Глубина", "Вес (г)", "Срок годн.", "Объём");
         }
 
-
-        private static void DisplayPallets(IEnumerable<Pallet> pallets, bool isWithBoxes = false)
+        private static void DisplayBox(Box box)
         {
-            DisplayHeader();
-            foreach (var pallet in pallets)
-            {
-                DisplayPallet(pallet, isWithBoxes);
-            }
+            Console.WriteLine("{0,6} | {1,7} | {2,6} | {3,6} | {4,7} | {5,8} | {6,10} | {7}",
+                box.TypeName, box.Id, box.Width, box.Height, box.Depth, box.Weigh, box.ExpirationDate, box.Volume);
+        }
 
+        private static void DisplayBoxes(IEnumerable<Box> boxes)
+        {
+            foreach (var box in boxes)
+            {
+                DisplayBox(box);
+            }
         }
 
         private static void DisplayBoxes(IEnumerable<Pallet> pallets)
@@ -125,22 +135,6 @@ namespace MonopolyTestTask
             }
 
         }
-
-        private static void DisplayBoxes(IEnumerable<Box> boxes)
-        {
-            foreach (var box in boxes)
-            {
-                DisplayBox(box);
-            }
-        }
-
-
-        private static void DisplayBox(Box box)
-        {
-            Console.WriteLine("{0,6} | {1,7} | {2,6} | {3,6} | {4,7} | {5,8} | {6,10} | {7}",
-                box.TypeName, box.Id, box.Width, box.Height, box.Depth, box.Weigh, box.ExpirationDate, box.Volume);
-        }
-
         private static void DisplayPallet(Pallet pallet, bool isWithBoxes = false)
         {
             Console.WriteLine("{0,6} | {1,7} | {2,6} | {3,6} | {4,7} | {5,8} | {6,10} | {7}",
@@ -151,6 +145,50 @@ namespace MonopolyTestTask
                 DisplayBoxes(pallet.GetBoxes());
             }
         }
+
+        private static void DisplayPallets(IEnumerable<Pallet> pallets, bool isWithBoxes = false)
+        {
+            DisplayHeader();
+            foreach (var pallet in pallets)
+            {
+                DisplayPallet(pallet, isWithBoxes);
+            }
+
+        }
+
+
+
+        #endregion
+
+
+        private static int ComparePalletsByIdASC(Pallet x, Pallet y)
+        {
+            if (x == null)
+            {
+                if (y == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            else
+            {
+                if (y == null)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return x.Id.CompareTo(y.Id);
+                }
+            }
+        }
+
+
+        #region Task 1
 
         private static void DisplayPalletsGroupByExpirationDate(IEnumerable<Pallet> pallets, bool isWithBoxes = false)
         {
@@ -167,7 +205,37 @@ namespace MonopolyTestTask
             }
         }
 
-        private static List<Pallet> Top3PalletsBiggestExpirationDateSortByVolumeASC(List<Pallet> pallets)
+
+        private static IEnumerable<Pallet> PalletsSortGroupByExpirationDateASCGroupSortByWeigh(List<Pallet> pallets)
+        {
+            //  Сгруппировать все паллеты по сроку годности,
+            //  отсортировать по возрастанию срока годности,
+            //  в каждой группе отсортировать паллеты по весу.
+            //Dictionary<DateOnly, List<Pallet>> palletsByDate = new();
+
+            //foreach (var pallet in pallets)
+            //{
+            //    if (!palletsByDate.ContainsKey(pallet.ExpirationDate))
+            //    {
+            //        palletsByDate.Add(pallet.ExpirationDate, new List<Pallet>());
+            //    }
+
+            //    palletsByDate[pallet.ExpirationDate].Add(pallet);
+            //}
+
+            // Так как мы только выводим данные, принял решение используя
+            // стаюильную сортировку поменять порядок элементов, а не 
+            // группировать их в под массивы, а затем при выводе разделять на группы.
+
+            return pallets.OrderBy(pallet => pallet.Weigh).OrderBy(pallet => pallet.ExpirationDate);
+
+        }
+
+        #endregion
+
+        #region Task 2
+
+        private static IEnumerable<Pallet> Top3PalletsBiggestExpirationDateSortByVolumeASC(List<Pallet> pallets)
         {
             Dictionary<Box, Pallet> newerBoxes = [];
 
@@ -245,171 +313,10 @@ namespace MonopolyTestTask
                 topNPallets.Add(newerBoxes[box]);
             }
 
-            topNPallets.OrderBy(pallet => pallet.Volume);
-
-            return topNPallets.Slice(0, 3);
+            return topNPallets.Slice(0, 3).OrderBy(pallet => pallet.Volume);
         }
 
-        private static int ComparePalletsByIdASC(Pallet x, Pallet y)
-        {
-            if (x == null)
-            {
-                if (y == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            else
-            {
-                if (y == null)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return x.Id.CompareTo(y.Id);
-                }
-            }
-        }
+        #endregion
 
-        private static int ComparePalletsByExpirationDateASC(Pallet x, Pallet y)
-        {
-            if (x == null)
-            {
-                if (y == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            else
-            {
-                if (y == null)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return x.ExpirationDate.CompareTo(y.ExpirationDate);
-                }
-            }
-        }
-
-        private static int CompareBoxesByExpirationDateDESC(Box x, Box y)
-            => -1 * CompareBoxesByExpirationDateASC(x, y);
-
-        private static int CompareBoxesByExpirationDateASC(Box x, Box y)
-        {
-            if (x == null)
-            {
-                if (y == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            else
-            {
-                if (y == null)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return x.ExpirationDate.CompareTo(y.ExpirationDate);
-                }
-            }
-        }
-
-        private static int ComparePalletsByExpirationDateDESC(Pallet x, Pallet y)
-            => -1 * ComparePalletsByExpirationDateASC(x, y);
-
-        private static int ComparePalletsByVolumeASC(Pallet x, Pallet y)
-        {
-            if (x == null)
-            {
-                if (y == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            else
-            {
-                if (y == null)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return x.Volume.CompareTo(y.Volume);
-                }
-            }
-        }
-
-        private static int ComparePalletsByWeighASC(Pallet x, Pallet y)
-        {
-            if (x == null)
-            {
-                if (y == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            else
-            {
-                if (y == null)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return x.Weigh.CompareTo(y.Weigh);
-                }
-            }
-        }
-
-
-        private static IEnumerable<Pallet> PalletsSortGroupByExpirationDateASCGroupSortByWeigh(List<Pallet> pallets)
-        {
-            //  Сгруппировать все паллеты по сроку годности,
-            //  отсортировать по возрастанию срока годности,
-            //  в каждой группе отсортировать паллеты по весу.
-            //Dictionary<DateOnly, List<Pallet>> palletsByDate = new();
-
-            //foreach (var pallet in pallets)
-            //{
-            //    if (!palletsByDate.ContainsKey(pallet.ExpirationDate))
-            //    {
-            //        palletsByDate.Add(pallet.ExpirationDate, new List<Pallet>());
-            //    }
-
-            //    palletsByDate[pallet.ExpirationDate].Add(pallet);
-            //}
-
-            // Так как мы только выводим данные, принял решение используя
-            // стаюильную сортировку поменять порядок элементов, а не 
-            // группировать их в под массивы, а затем при выводе разделять на группы.
-
-            return pallets.OrderBy(pallet => pallet.Weigh).OrderBy(pallet => pallet.ExpirationDate);
-
-        }
     }
 }
