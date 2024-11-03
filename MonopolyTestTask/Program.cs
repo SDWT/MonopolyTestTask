@@ -313,7 +313,24 @@ namespace MonopolyTestTask
 
         private static void PalletsSortGroupByExpirationDateASCInGroupSortByWeigh(List<Pallet> pallets)
         {
+            //  Сгруппировать все паллеты по сроку годности,
+            //Dictionary<DateOnly, List<Pallet>> palletsByDate = new();
 
+            //foreach (var pallet in pallets)
+            //{
+            //    if (!palletsByDate.ContainsKey(pallet.ExpirationDate))
+            //    {
+            //        palletsByDate.Add(pallet.ExpirationDate, new List<Pallet>());
+            //    }
+
+            //    palletsByDate[pallet.ExpirationDate].Add(pallet);
+            //}
+
+
+            //  отсортировать по возрастанию срока годности,
+
+
+            //  в каждой группе отсортировать паллеты по весу.
         }
     }
 }
